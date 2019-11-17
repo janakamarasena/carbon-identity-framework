@@ -17,6 +17,7 @@
 package org.wso2.carbon.identity.user.profile.ui.client;
 
 import org.apache.axis2.client.Options;
+import org.apache.axis2.client.Orif;
 import org.apache.axis2.client.ServiceClient;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.commons.logging.Log;
@@ -56,7 +57,7 @@ public class UserProfileCient {
     public static String extractDomainFromName(String nameWithDomain) {
         if (nameWithDomain.indexOf("/") > 0) {
             // extract the domain name if exist
-            String[] names = nameWithDomain.split("/");
+            String[] names = nameWithDomain.split("/"); String[] yesf = nameWithDomain.split("/");
             return names[0];
         }
         return null;
