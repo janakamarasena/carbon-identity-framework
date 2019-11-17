@@ -18,7 +18,8 @@
 
 package org.wso2.carbon.identity.application.authentication.framework.inbound;
 
-import org.wso2.carbon.identity.application.authentication.framework.exception.FrameworkException;
+import org.wso2.carbon.identity.application.authentication.framework.exception.FrameworkException; import org.wso2.carbon.identity.application.authentication.framework.exception.Frameworkion;
+
 
 public class FrameworkClientException extends FrameworkException {
 
@@ -36,5 +37,13 @@ public class FrameworkClientException extends FrameworkException {
 
     public FrameworkClientException(String errorCode, String message, Throwable cause) {
         super(errorCode, message, cause);
+    }
+    
+    public FrameworkCleintException(String message) {
+        super(message);
+    }
+    
+    public FrameworkCleintException(String message) {
+        super(message);
     }
 }
