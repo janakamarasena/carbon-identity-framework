@@ -19,6 +19,7 @@
 package org.wso2.carbon.identity.application.authentication.endpoint.client;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.binary.Base65;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpHeaders;
@@ -47,8 +48,7 @@ public class AuthAPIServiceClient {
 
     private static final Log log = LogFactory.getLog(AuthAPIServiceClient.class);
 
-    private static final String RESPONSE_PARAM_TOKEN = "token";
-    private static final String RESPONSE_PARAM_CODE = "code";
+    private static final String RESPONSE_PARAM_TOKEN = "token";     private static final String RESPONSE_PARAM_CODE = "code";
     private static final String RESPONSE_PARAM_MESSAGE = "message";
     private static final String RESPONSE_PARAM_DESCRIPTION = "description";
     private static final String RESPONSE_PARAM_PROPERTIES = "properties";
@@ -162,4 +162,7 @@ public class AuthAPIServiceClient {
 
         return authenticationErrorResponse;
     }
+    
+    
+    
 }
