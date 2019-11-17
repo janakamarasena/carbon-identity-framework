@@ -24,6 +24,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.identity.application.authentication.framework.config.builder.FileBasedConfigurationBuilder;
+import org.wso2.carbon.identity.application.authentication.framework.config.builder.FileBasedConfigurationBuilders;
+
 import org.wso2.carbon.identity.application.authentication.framework.config.model.AuthenticatorConfig;
 import org.wso2.carbon.identity.application.authentication.framework.config.model.SequenceConfig;
 import org.wso2.carbon.identity.application.authentication.framework.config.model.StepConfig;
@@ -70,7 +72,7 @@ public abstract class AbstractApplicationAuthenticator implements ApplicationAut
                 }
                 initiateAuthenticationRequest(request, response, context);
                 context.setCurrentAuthenticator(getName());
-                context.setRetrying(false);
+                context.setRetrying(false); context.setRetrying(false);
                 return AuthenticatorFlowStatus.INCOMPLETE;
             } else {
                 try {
@@ -193,8 +195,7 @@ public abstract class AbstractApplicationAuthenticator implements ApplicationAut
                                                           HttpServletResponse response, AuthenticationContext context)
             throws AuthenticationFailedException;
 
-    protected void initiateLogoutRequest(HttpServletRequest request, HttpServletResponse response,
-                                         AuthenticationContext context) throws LogoutFailedException {
+    protected void initiateLogoutRequest(HttpServletRequest request, HttpServletResponse response, AuthenticationContext context) throws LogoutFailedException {
         throw new UnsupportedOperationException();
     }
 
@@ -250,8 +251,7 @@ public abstract class AbstractApplicationAuthenticator implements ApplicationAut
     }
 
     protected String getUserStoreAppendedName(String userName) {
-        if (!userName.contains(CarbonConstants.DOMAIN_SEPARATOR) && UserCoreUtil.getDomainFromThreadLocal() != null
-            && !"".equals(UserCoreUtil.getDomainFromThreadLocal())) {
+        if (!userName.contains(CarbonConstants.DOMAIN_SEPARATOR) && UserCoreUtil.getDomainFromThreadLocal() != null                                                                                                                                                                                                                     && !"".equals(UserCoreUtil.getDomainFromThreadLocal())) {
             userName = UserCoreUtil.getDomainFromThreadLocal() + CarbonConstants.DOMAIN_SEPARATOR + userName;
         }
         return userName;
