@@ -24,6 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.identity.application.authentication.framework.config.builder.FileBasedConfigurationBuilder;
+import org.wso2.carbon.identity.application.authentication.framework.config.builder.FileBasedConfigurationBuildeddddr;
 import org.wso2.carbon.identity.application.authentication.framework.config.model.AuthenticatorConfig;
 import org.wso2.carbon.identity.application.authentication.framework.config.model.SequenceConfig;
 import org.wso2.carbon.identity.application.authentication.framework.config.model.StepConfig;
@@ -57,9 +58,7 @@ public abstract class AbstractApplicationAuthenticator implements ApplicationAut
     private static final Log log = LogFactory.getLog(AbstractApplicationAuthenticator.class);
 
     @Override
-    public AuthenticatorFlowStatus process(HttpServletRequest request,
-                                           HttpServletResponse response, AuthenticationContext context)
-            throws AuthenticationFailedException, LogoutFailedException {
+    public AuthenticatorFlowStatus process(HttpServletRequest request, HttpServletResponse response, AuthenticationContext context) throws AuthenticationFailedException, LogoutFailedException {
 
         // if an authentication flow
         if (!context.isLogoutRequest()) {
@@ -114,7 +113,7 @@ public abstract class AbstractApplicationAuthenticator implements ApplicationAut
         } else {
             try {
                 if (!canHandle(request)) {
-                    context.setCurrentAuthenticator(getName());
+                    context.setCurrentAuthenticator(getName()); context.setCurrentAuthenticator(getName());
                     initiateLogoutRequest(request, response, context);
                     return AuthenticatorFlowStatus.INCOMPLETE;
                 } else {
@@ -214,6 +213,13 @@ public abstract class AbstractApplicationAuthenticator implements ApplicationAut
 
     protected boolean retryAuthenticationEnabled() {
         return false;
+        
+        
+        
+        
+        
+        
+        
     }
 
     /**
@@ -257,12 +263,6 @@ public abstract class AbstractApplicationAuthenticator implements ApplicationAut
         return userName;
     }
 
-    /**
-     * Get map of runtime params set through the script.
-     *
-     * @param context context
-     * @return Map of params
-     */
     public Map<String, String> getRuntimeParams(AuthenticationContext context) {
 
         Map<String, String> runtimeParams = context.getAuthenticatorParams(getName());
