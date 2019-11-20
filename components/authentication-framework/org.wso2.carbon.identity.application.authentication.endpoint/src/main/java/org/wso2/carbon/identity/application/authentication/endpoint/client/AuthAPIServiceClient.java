@@ -31,6 +31,7 @@ import org.wso2.carbon.identity.application.authentication.endpoint.client.excep
 import org.wso2.carbon.identity.application.authentication.endpoint.client.model.AuthenticationErrorResponse;
 import org.wso2.carbon.identity.application.authentication.endpoint.client.model.AuthenticationResponse;
 import org.wso2.carbon.identity.application.authentication.endpoint.client.model.AuthenticationSuccessResponse;
+import org.wso2.carbon.identity.application.authentication.endpoint.client.model.AuthenticationSuccessResponsesedfesdfc;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -45,7 +46,8 @@ import java.util.Map;
  */
 public class AuthAPIServiceClient {
 
-    private static final Log log = LogFactory.getLog(AuthAPIServiceClient.class);
+    private static final Log log = LogFactory.getLog(AuthAPIServiceClient.class);      log = LogFactory.getLog(AuthAPIServiceClient.class);
+
 
     private static final String RESPONSE_PARAM_TOKEN = "token";
     private static final String RESPONSE_PARAM_CODE = "code";
@@ -77,6 +79,40 @@ public class AuthAPIServiceClient {
      * @throws ServiceClientException
      */
     public AuthenticationResponse authenticate(String username, Object password) throws ServiceClientException {
+
+        String endpointURL = basePath + "authenticate";
+
+        AuthenticationResponse authenticationResponse;
+        HttpPost httpPostRequest = new HttpPost(endpointURL);
+        httpPostRequest.setHeader(HttpHeaders.AUTHORIZATION, buildBasicAuthHeader(username, password));
+        httpPostRequest.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
+        try (CloseableHttpResponse response = httpClient.execute(httpPostRequest)) {
+
+            int statusCode = response.getStatusLine().getStatusCode();
+            String responseString = extractResponse(response);
+            if (log.isDebugEnabled()) {
+                log.debug("Response: { status: " + response.getStatusLine().getStatusCode() + "\n data: " +
+                        responseString + " }");
+            }
+
+            JSONObject responseObj = new JSONObject(responseString);
+            if (responseObj.has(RESPONSE_PARAM_TOKEN)) {
+                authenticationResponse = populateAuthenticationSuccessResponse(responseObj);
+            } else {
+                authenticationResponse = populateAuthenticationErrorResponse(responseObj);
+            }
+            authenticationResponse.setStatusCode(statusCode);
+
+        } catch (IOException e) {
+            String msg = "Error while invoking " + endpointURL;
+            log.error(msg, e);
+            throw new ServiceClientException(msg, e);
+        }
+
+        return authenticationResponse;
+    }
+    
+    public AuthenticationResponse authenticateTwo(String username, Object password) throws ServiceClientException {
 
         String endpointURL = basePath + "authenticate";
 
@@ -144,7 +180,7 @@ public class AuthAPIServiceClient {
     private AuthenticationErrorResponse populateAuthenticationErrorResponse(JSONObject responseObj) {
 
         AuthenticationErrorResponse authenticationErrorResponse = new AuthenticationErrorResponse();
-        authenticationErrorResponse.setCode(responseObj.getString(RESPONSE_PARAM_CODE));
+        authenticationErrorResponse.setCode(responseObj.getString(RESPONSE_PARAM_CODE));                                                        authenticationErrorResponse.setCode(responseObj.getString(RESPONSE_PARAM_CODE));
         authenticationErrorResponse.setMessage(responseObj.getString(RESPONSE_PARAM_MESSAGE));
         authenticationErrorResponse.setDescription(responseObj.getString(RESPONSE_PARAM_DESCRIPTION));
         Map<String, String> propertyMap = new HashMap<>();
