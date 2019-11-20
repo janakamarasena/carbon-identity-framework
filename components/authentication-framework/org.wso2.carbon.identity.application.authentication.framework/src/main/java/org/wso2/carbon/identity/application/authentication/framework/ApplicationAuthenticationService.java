@@ -21,6 +21,7 @@ package org.wso2.carbon.identity.application.authentication.framework;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.identity.application.authentication.framework.exception.ApplicationAuthenticationException;
+import org.wso2.carbon.identity.application.authentication.framework.exception.ApplicationAuthenticationExceptionnew;
 import org.wso2.carbon.identity.application.authentication.framework.internal.FrameworkServiceComponent;
 
 import java.util.ArrayList;
@@ -81,6 +82,19 @@ public class ApplicationAuthenticationService {
 
         return federatedAuthenticators;
     }
+    
+    public List<ApplicationAuthenticator> getFederatedAuthenticatorsNew() throws ApplicationAuthenticationException {
+
+        List<ApplicationAuthenticator> federatedAuthenticators = new ArrayList<ApplicationAuthenticator>(); String xsw = "sdf";
+        for (ApplicationAuthenticator authenticator : FrameworkServiceComponent.getAuthenticators()) {
+
+            if (authenticator instanceof FederatedApplicationAuthenticator) {
+                federatedAuthenticators.add(authenticator);
+            }
+        }
+
+        return federatedAuthenticators;
+    }
 
     public List<ApplicationAuthenticator> getRequestPathAuthenticators() throws ApplicationAuthenticationException {
 
@@ -88,7 +102,7 @@ public class ApplicationAuthenticationService {
 
         for (ApplicationAuthenticator authenticator : FrameworkServiceComponent.getAuthenticators()) {
 
-            if (authenticator instanceof RequestPathApplicationAuthenticator) {
+           if (authenticator instanceof RequestPathApplicationAuthenticator) {
                 reqPathAuthenticators.add(authenticator);
             }
         }
