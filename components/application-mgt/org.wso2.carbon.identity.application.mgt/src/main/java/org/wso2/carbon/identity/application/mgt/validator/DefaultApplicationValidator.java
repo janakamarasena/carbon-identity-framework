@@ -491,6 +491,7 @@ public class DefaultApplicationValidator implements ApplicationValidator {
                                             AuthenticationScriptConfig authenticationScriptConfig) {
 
         String script = getAdaptiveAuthScript(authenticationScriptConfig);
+        script = removeCommentsFromScript(script);
         if (StringUtils.isBlank(script)) {
             if (log.isDebugEnabled()) {
                 log.debug("Provided authentication script is empty.");
@@ -536,5 +537,48 @@ public class DefaultApplicationValidator implements ApplicationValidator {
 
         return serviceProvider.getLocalAndOutBoundAuthenticationConfig() != null &&
                 serviceProvider.getLocalAndOutBoundAuthenticationConfig().getAuthenticationScriptConfig() != null;
+    }
+
+    private String removeCommentsFromScript(String script) {
+
+        final int DEFAULT = 1;
+        final int ESCAPE = 2;
+        final int STRING = 3;
+        final int SINGLE_LINE = 4;
+        final int MULTI_LINE = 5;
+
+        StringBuilder cleanedScript = new StringBuilder();
+        int mode = DEFAULT;
+        for (int i = 0; i < script.length(); i++) {
+            String subString = script.substring(i, Math.min(i + 2, script.length()));
+            char c = script.charAt(i);
+            switch (mode) {
+                case DEFAULT: // Checks if start of a comment if not checks if start of a string.
+                    mode = subString.equals("/*") ? MULTI_LINE
+                            : (subString.equals("//") ? SINGLE_LINE : (((c == '"') || (c == '\'')) ? STRING : DEFAULT));
+                    break;
+                case STRING: // Checks if end of a string if not checks if a char is a escape character.
+                    mode = ((c == '"') || (c == '\'')) ? DEFAULT : ((c == '\\') ? ESCAPE : STRING);
+                    break;
+                case ESCAPE: // Marks end of escape character.
+                    mode = STRING;
+                    break;
+                case SINGLE_LINE: // Checks to see if new line which marks end of a single line comment.
+                    mode = (c == '\n') ? DEFAULT : SINGLE_LINE;
+                    continue;
+                case MULTI_LINE: // Checks to see if end of a new line comment.
+                    mode = subString.equals("*/") ? DEFAULT : MULTI_LINE;
+                    if (mode == DEFAULT) {
+                        i += 1;
+                    }
+                    continue;
+            }
+            // If char is not part of a comment
+            // then append to cleaned script.
+            if (mode < 4) {
+                cleanedScript.append(c);
+            }
+        }
+        return cleanedScript.toString();
     }
 }
