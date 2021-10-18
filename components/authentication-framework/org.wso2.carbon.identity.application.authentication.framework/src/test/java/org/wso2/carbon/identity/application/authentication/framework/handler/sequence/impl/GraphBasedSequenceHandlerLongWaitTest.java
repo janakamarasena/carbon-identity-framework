@@ -25,7 +25,7 @@ import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.identity.application.authentication.framework.AsyncProcess;
 import org.wso2.carbon.identity.application.authentication.framework.JsFunctionRegistry;
 import org.wso2.carbon.identity.application.authentication.framework.config.model.SequenceConfig;
-import org.wso2.carbon.identity.application.authentication.framework.config.model.graph.JSExecutionSupervisor;
+import org.wso2.carbon.identity.application.authentication.framework.config.model.graph.supervisor.JSExecutionSupervisor;
 import org.wso2.carbon.identity.application.authentication.framework.config.model.graph.JsFunctionRegistryImpl;
 import org.wso2.carbon.identity.application.authentication.framework.config.model.graph.JsGraphBuilder;
 import org.wso2.carbon.identity.application.authentication.framework.context.AuthenticationContext;

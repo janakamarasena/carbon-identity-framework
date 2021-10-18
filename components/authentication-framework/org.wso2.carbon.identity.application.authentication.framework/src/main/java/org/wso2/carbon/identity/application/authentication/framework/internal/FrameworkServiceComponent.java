@@ -48,7 +48,7 @@ import org.wso2.carbon.identity.application.authentication.framework.config.Conf
 import org.wso2.carbon.identity.application.authentication.framework.config.builder.FileBasedConfigurationBuilder;
 import org.wso2.carbon.identity.application.authentication.framework.config.loader.UIBasedConfigurationLoader;
 import org.wso2.carbon.identity.application.authentication.framework.config.model.AuthenticatorConfig;
-import org.wso2.carbon.identity.application.authentication.framework.config.model.graph.JSExecutionSupervisor;
+import org.wso2.carbon.identity.application.authentication.framework.config.model.graph.supervisor.JSExecutionSupervisor;
 import org.wso2.carbon.identity.application.authentication.framework.config.model.graph.JsFunctionRegistryImpl;
 import org.wso2.carbon.identity.application.authentication.framework.config.model.graph.JsGraphBuilderFactory;
 import org.wso2.carbon.identity.application.authentication.framework.dao.impl.CacheBackedLongWaitStatusDAO;

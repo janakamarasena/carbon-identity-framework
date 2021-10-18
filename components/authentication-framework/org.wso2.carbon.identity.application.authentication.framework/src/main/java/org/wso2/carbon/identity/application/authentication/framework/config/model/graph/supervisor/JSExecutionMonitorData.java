@@ -15,7 +15,7 @@
  *  limitations under the License.
  */
 
-package org.wso2.carbon.identity.application.authentication.framework.config.model.graph;
+package org.wso2.carbon.identity.application.authentication.framework.config.model.graph.supervisor;
 
 import java.io.Serializable;
 
@@ -27,11 +27,15 @@ public class JSExecutionMonitorData implements Serializable {
     private static final long serialVersionUID = 1183234189933783699L;
     private long elapsedTime;
     private long consumedMemory;
+    private String serviceProvider;
+    private String tenantDomain;
 
-    public JSExecutionMonitorData(long elapsedTime, long consumedMemory) {
+    public JSExecutionMonitorData(long elapsedTime, long consumedMemory, String serviceProvider, String tenantDomain) {
 
         this.elapsedTime = elapsedTime;
         this.consumedMemory = consumedMemory;
+        this.serviceProvider = serviceProvider;
+        this.tenantDomain = tenantDomain;
     }
 
     public long getElapsedTime() {
@@ -52,5 +56,25 @@ public class JSExecutionMonitorData implements Serializable {
     public void setConsumedMemory(long consumedMemory) {
 
         this.consumedMemory = consumedMemory;
+    }
+
+    public String getServiceProvider() {
+
+        return serviceProvider;
+    }
+
+    public void setServiceProvider(String serviceProvider) {
+
+        this.serviceProvider = serviceProvider;
+    }
+
+    public String getTenantDomain() {
+
+        return tenantDomain;
+    }
+
+    public void setTenantDomain(String tenantDomain) {
+
+        this.tenantDomain = tenantDomain;
     }
 }

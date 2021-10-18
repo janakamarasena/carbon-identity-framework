@@ -14,14 +14,16 @@
  *  limitations under the License.
  */
 
-package org.wso2.carbon.identity.application.authentication.framework.config.model.graph;
+package org.wso2.carbon.identity.application.authentication.framework.config.model.graph.supervisor;
 
 import com.sun.management.ThreadMXBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.lang.management.ManagementFactory;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -43,6 +45,7 @@ public class JSExecutionSupervisor {
     private static final int MONITOR_TYPE_TIME = 0;
     private static final int MONITOR_TYPE_MEMORY = 1;
     private static final int WARN_THRESHOLD = 70;
+    private final List<String> excludableFunctions;
 
     public JSExecutionSupervisor(int threadCount, long timeoutInMillis) {
 
@@ -65,6 +68,12 @@ public class JSExecutionSupervisor {
         }
 
         monitoringService = new ScheduledThreadPoolExecutor(threadCount, r -> new Thread(r, JS_EXECUTION_MONITOR));
+
+        excludableFunctions = new ArrayList<>();
+        excludableFunctions.add("isSuccessLookup");
+        excludableFunctions.add("getAssociatedLocalUser");
+        excludableFunctions.add("getUniqueUserWithClaimValues");
+        excludableFunctions.add("doAssociationWithLocalUser");
     }
 
     /**
@@ -87,6 +96,37 @@ public class JSExecutionSupervisor {
     public void monitor(String identifier, String serviceProvider, String tenantDomain, long elapsedTimeInMillis) {
 
         monitor(identifier, serviceProvider, tenantDomain, elapsedTimeInMillis, 0L);
+    }
+
+    /**
+     * Start monitoring an adaptive auth execution
+     * with 0 elapsed time and 0 memory consumption.
+     *
+     *
+     * @param identifier          Monitoring task identifier.
+     * @param serviceProvider     Service provider of the adaptive auth script.
+     * @param tenantDomain        Tenant domain.
+     */
+    public void monitor(String identifier, String serviceProvider, String tenantDomain) {
+
+        monitor(identifier, serviceProvider, tenantDomain, 0L, 0L);
+    }
+
+    /**
+     * Resume monitoring an adaptive auth execution.
+     * If the script monitoring was stopped in-between a flow,
+     * this method can be used to resume it by passing in the
+     * identifier and the JSExecutionMonitorData produced by
+     * previously stopping the monitoring task.
+     *
+     * @param identifier          Monitoring task identifier.
+     * @param previousMonitorData Monitoring data produced in from
+     *                            previously stopping a monitoring task.
+     */
+    public void monitor(String identifier, JSExecutionMonitorData previousMonitorData) {
+
+        monitor(identifier, previousMonitorData.getServiceProvider(), previousMonitorData.getTenantDomain(),
+                previousMonitorData.getElapsedTime(), previousMonitorData.getConsumedMemory());
     }
 
     /**
@@ -133,13 +173,22 @@ public class JSExecutionSupervisor {
         MonitoringTask task = taskHolder.getMonitoringTask();
         long elapsedTime = 0L;
         long consumedMemory = 0L;
+        String serviceProvider = null;
+        String tenantDomain = null;
         if (task != null) {
             elapsedTime = task.getTotalElapsedTime();
             consumedMemory = task.getTotalConsumedMemory();
             task.turnOffThreadMemoryCounting();
+            serviceProvider = task.serviceProvider;
+            tenantDomain = task.tenantDomain;
         }
 
-        return new JSExecutionMonitorData(elapsedTime, consumedMemory);
+        return new JSExecutionMonitorData(elapsedTime, consumedMemory, serviceProvider, tenantDomain);
+    }
+
+    public boolean isExcludableFunction(String function) {
+
+        return excludableFunctions.contains(function);
     }
 
     private class TaskHolder {

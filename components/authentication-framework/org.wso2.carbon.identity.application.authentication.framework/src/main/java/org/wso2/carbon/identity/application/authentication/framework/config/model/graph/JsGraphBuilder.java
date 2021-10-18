@@ -31,6 +31,10 @@ import org.wso2.carbon.identity.application.authentication.framework.JsFunctionR
 import org.wso2.carbon.identity.application.authentication.framework.config.model.AuthenticatorConfig;
 import org.wso2.carbon.identity.application.authentication.framework.config.model.StepConfig;
 import org.wso2.carbon.identity.application.authentication.framework.config.model.graph.js.JsAuthenticationContext;
+import org.wso2.carbon.identity.application.authentication.framework.config.model.graph.supervisor.InvocationWrapperFunction;
+import org.wso2.carbon.identity.application.authentication.framework.config.model.graph.supervisor.JSExecutionMonitorData;
+import org.wso2.carbon.identity.application.authentication.framework.config.model.graph.supervisor.JSExecutionSupervisor;
+import org.wso2.carbon.identity.application.authentication.framework.config.model.graph.supervisor.SupervisorExclusionFnWrapper;
 import org.wso2.carbon.identity.application.authentication.framework.context.AuthenticationContext;
 import org.wso2.carbon.identity.application.authentication.framework.internal.FrameworkServiceComponent;
 import org.wso2.carbon.identity.application.authentication.framework.internal.FrameworkServiceDataHolder;
@@ -164,16 +168,23 @@ public class JsGraphBuilder {
             globalBindings.put(FrameworkConstants.JSAttributes.JS_FUNC_LOAD_FUNC_LIB,
                     (LoadExecutor) this::loadLocalLibrary);
             JsFunctionRegistry jsFunctionRegistrar = FrameworkServiceDataHolder.getInstance().getJsFunctionRegistry();
+            String identifier = UUID.randomUUID().toString();
             if (jsFunctionRegistrar != null) {
                 Map<String, Object> functionMap = jsFunctionRegistrar
                         .getSubsystemFunctionsMap(JsFunctionRegistry.Subsystem.SEQUENCE_HANDLER);
-                functionMap.forEach(globalBindings::put);
+                for (Map.Entry<String, Object> entry : functionMap.entrySet()) {
+                    if (getJSExecutionSupervisor().isExcludableFunction(entry.getKey())) {
+                        InvocationWrapperFunction fnWrapper = new SupervisorExclusionFnWrapper(entry.getKey(),
+                                entry.getValue(), identifier);
+                        globalBindings.put(entry.getKey(), fnWrapper);
+                    } else {
+                        globalBindings.put(entry.getKey(), entry.getValue());
+                    }
+                }
             }
             Invocable invocable = (Invocable) engine;
             engine.eval(FrameworkServiceDataHolder.getInstance().getCodeForRequireFunction());
             removeDefaultFunctions(engine);
-
-            String identifier = UUID.randomUUID().toString();
             JSExecutionMonitorData scriptExecutionData;
             try {
                 startScriptExecutionMonitor(identifier, authenticationContext);
@@ -975,22 +986,20 @@ public class JsGraphBuilder {
         if (storedResult != null) {
             jsExecutionMonitorData = (JSExecutionMonitorData) storedResult;
         } else {
-            jsExecutionMonitorData = new JSExecutionMonitorData(0L, 0L);
+            jsExecutionMonitorData = new JSExecutionMonitorData(0L, 0L,
+                    context.getServiceProviderName(), context.getTenantDomain());
         }
         return jsExecutionMonitorData;
     }
 
-    private void startScriptExecutionMonitor(String identifier, AuthenticationContext context,
-                                             JSExecutionMonitorData previousExecutionResult) {
+    private void startScriptExecutionMonitor(String identifier, JSExecutionMonitorData previousExecutionMonitorData) {
 
-        getJSExecutionSupervisor().monitor(identifier, context.getServiceProviderName()
-                , context.getTenantDomain(), previousExecutionResult.getElapsedTime(),
-                previousExecutionResult.getConsumedMemory());
+        getJSExecutionSupervisor().monitor(identifier, previousExecutionMonitorData);
     }
 
     private void startScriptExecutionMonitor(String identifier, AuthenticationContext context) {
 
-        startScriptExecutionMonitor(identifier, context, new JSExecutionMonitorData(0L, 0L));
+        getJSExecutionSupervisor().monitor(identifier, context.getServiceProviderName(), context.getTenantDomain());
     }
 
     private JSExecutionMonitorData endScriptExecutionMonitor(String identifier) {
@@ -1041,10 +1050,19 @@ public class JsGraphBuilder {
                             graphBuilder::loadLocalLibrary);
                     JsFunctionRegistry jsFunctionRegistry = FrameworkServiceDataHolder.getInstance()
                             .getJsFunctionRegistry();
+                    String identifier = UUID.randomUUID().toString();
                     if (jsFunctionRegistry != null) {
                         Map<String, Object> functionMap = jsFunctionRegistry
                                 .getSubsystemFunctionsMap(JsFunctionRegistry.Subsystem.SEQUENCE_HANDLER);
-                        functionMap.forEach(globalBindings::put);
+                        for (Map.Entry<String, Object> entry : functionMap.entrySet()) {
+                            if (getJSExecutionSupervisor().isExcludableFunction(entry.getKey())) {
+                                InvocationWrapperFunction fnWrapper = new SupervisorExclusionFnWrapper(entry.getKey(),
+                                        entry.getValue(), identifier);
+                                globalBindings.put(entry.getKey(), fnWrapper);
+                            } else {
+                                globalBindings.put(entry.getKey(), entry.getValue());
+                            }
+                        }
                     }
                     removeDefaultFunctions(scriptEngine);
                     Compilable compilable = (Compilable) scriptEngine;
@@ -1052,11 +1070,10 @@ public class JsGraphBuilder {
 
                     CompiledScript compiledScript = compilable.compile(jsFunction.getSource());
 
-                    String identifier = UUID.randomUUID().toString();
                     JSExecutionMonitorData scriptExecutionData =
                             retrieveAuthScriptExecutionMonitorData(authenticationContext);
                     try {
-                        startScriptExecutionMonitor(identifier, authenticationContext, scriptExecutionData);
+                        startScriptExecutionMonitor(identifier, scriptExecutionData);
                         JSObject builderFunction = (JSObject) compiledScript.eval();
                         result = jsConsumer.apply(builderFunction);
                     } finally {

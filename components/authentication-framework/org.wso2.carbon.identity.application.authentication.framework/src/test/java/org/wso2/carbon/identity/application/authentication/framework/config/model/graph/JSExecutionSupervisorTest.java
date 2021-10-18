@@ -20,6 +20,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Assert;
 import org.testng.annotations.Test;
+import org.wso2.carbon.identity.application.authentication.framework.config.model.graph.supervisor.JSExecutionMonitorData;
+import org.wso2.carbon.identity.application.authentication.framework.config.model.graph.supervisor.JSExecutionSupervisor;
 
 import java.util.HashMap;
 import java.util.UUID;

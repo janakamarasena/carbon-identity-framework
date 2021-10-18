@@ -24,7 +24,7 @@ import org.testng.annotations.Test;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.identity.application.authentication.framework.AuthenticatorFlowStatus;
 import org.wso2.carbon.identity.application.authentication.framework.config.model.SequenceConfig;
-import org.wso2.carbon.identity.application.authentication.framework.config.model.graph.JSExecutionSupervisor;
+import org.wso2.carbon.identity.application.authentication.framework.config.model.graph.supervisor.JSExecutionSupervisor;
 import org.wso2.carbon.identity.application.authentication.framework.context.AuthHistory;
 import org.wso2.carbon.identity.application.authentication.framework.context.AuthenticationContext;
 import org.wso2.carbon.identity.application.authentication.framework.internal.FrameworkServiceDataHolder;

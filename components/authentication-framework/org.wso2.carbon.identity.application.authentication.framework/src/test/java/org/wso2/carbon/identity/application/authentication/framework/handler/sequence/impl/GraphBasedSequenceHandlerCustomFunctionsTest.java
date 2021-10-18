@@ -30,7 +30,7 @@ import org.wso2.carbon.identity.application.authentication.framework.Authenticat
 import org.wso2.carbon.identity.application.authentication.framework.JsFunctionRegistry;
 import org.wso2.carbon.identity.application.authentication.framework.MockAuthenticator;
 import org.wso2.carbon.identity.application.authentication.framework.config.model.SequenceConfig;
-import org.wso2.carbon.identity.application.authentication.framework.config.model.graph.JSExecutionSupervisor;
+import org.wso2.carbon.identity.application.authentication.framework.config.model.graph.supervisor.JSExecutionSupervisor;
 import org.wso2.carbon.identity.application.authentication.framework.config.model.graph.JsFunctionRegistryImpl;
 import org.wso2.carbon.identity.application.authentication.framework.config.model.graph.js.JsAuthenticationContext;
 import org.wso2.carbon.identity.application.authentication.framework.context.AuthHistory;

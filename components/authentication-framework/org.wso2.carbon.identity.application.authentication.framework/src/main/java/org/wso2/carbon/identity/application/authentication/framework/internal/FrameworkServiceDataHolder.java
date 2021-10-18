@@ -28,7 +28,7 @@ import org.wso2.carbon.identity.application.authentication.framework.Authenticat
 import org.wso2.carbon.identity.application.authentication.framework.JsFunctionRegistry;
 import org.wso2.carbon.identity.application.authentication.framework.ServerSessionManagementService;
 import org.wso2.carbon.identity.application.authentication.framework.config.loader.SequenceLoader;
-import org.wso2.carbon.identity.application.authentication.framework.config.model.graph.JSExecutionSupervisor;
+import org.wso2.carbon.identity.application.authentication.framework.config.model.graph.supervisor.JSExecutionSupervisor;
 import org.wso2.carbon.identity.application.authentication.framework.config.model.graph.JsGraphBuilderFactory;
 import org.wso2.carbon.identity.application.authentication.framework.exception.FrameworkException;
 import org.wso2.carbon.identity.application.authentication.framework.handler.claims.ClaimFilter;
