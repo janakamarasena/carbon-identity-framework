@@ -62,7 +62,12 @@ public class AuthenticationService {
      * @throws AuthServiceException If an error occurs while handling the authentication request.
      */
     public AuthServiceResponse handleAuthentication(AuthServiceRequest authRequest) throws AuthServiceException {
+        /* TODO: check if the application contains an authenticator that
+            doesn't support api based auth and throw an error.
 
+            alternative: remove any steps that doesn't support api based auth.
+            If there are no steps that support api based auth then fail.
+         */
         AuthServiceRequestWrapper wrappedRequest = getWrappedRequest(authRequest.getRequest(),
                 authRequest.getParameters());
         AuthServiceResponseWrapper wrappedResponse = getWrappedResponse(authRequest.getResponse());
@@ -90,6 +95,7 @@ public class AuthenticationService {
             throws AuthServiceException {
 
         AuthServiceResponse authServiceResponse = new AuthServiceResponse();
+        // handle user abort
 
         if (isAuthFlowSuccessful(request)) {
             handleSuccessAuthResponse(request, response, authServiceResponse);
